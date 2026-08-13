@@ -1,0 +1,19 @@
+# Render Blueprint — one web service serving BOTH the FastAPI backend and the
+# static frontend (FastAPI mounts static/ and returns index.html at /).
+#
+# Render → New → Blueprint → pick this repo. Set GROQ_API_KEY afterwards under
+# Dashboard → service → Environment, or leave it unset to run ML-only.
+
+services:
+  - type: web
+    name: mailguard-phishing
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/info
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.10"
+      - key: GROQ_API_KEY
+        sync: false          # set the value in the Render dashboard, never in git

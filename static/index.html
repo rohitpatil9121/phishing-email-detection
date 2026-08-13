@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MailGuard — Phishing Email Detection</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <a class="brand" href="/">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+    <span>Mail<b>Guard</b></span>
+  </a>
+  <nav>
+    <a href="#scan">Scan</a>
+    <a href="#how">How it works</a>
+    <a href="/docs">API</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <p class="eyebrow">Project 2 · AI &amp; ML Internship 2026</p>
+    <h1>Catch phishing before <span class="grad">someone clicks</span>.</h1>
+    <p class="lead">Paste an email. The classifier combines TF-IDF over the message text with
+      nine structural signals — links, IP addresses, shorteners, urgency language, shouting,
+      sender domain — and explains every one that fired.</p>
+    <div class="stats">
+      <div class="stat"><span class="k" id="stat-acc">—</span><span class="l">test accuracy</span></div>
+      <div class="stat"><span class="k" id="stat-fpr">—</span><span class="l">false-positive rate</span></div>
+      <div class="stat"><span class="k" id="stat-n">—</span><span class="l">training emails</span></div>
+    </div>
+  </section>
+
+  <section class="panel" id="scan">
+    <form id="form">
+      <div class="grid">
+        <div>
+          <label for="subject">Subject</label>
+          <input id="subject" type="text" placeholder="Re: Q3 planning notes">
+        </div>
+        <div>
+          <label for="sender">Sender</label>
+          <input id="sender" type="text" placeholder="jane.doe@corp.example.com">
+        </div>
+      </div>
+      <label for="text">Email body</label>
+      <textarea id="text" rows="9" placeholder="Paste the full email body here…" required></textarea>
+      <fieldset class="engine" id="engine-box">
+        <legend>Decide with</legend>
+        <label><input type="radio" name="engine" value="both" checked> Both — compare</label>
+        <label><input type="radio" name="engine" value="ml"> Trained model</label>
+        <label><input type="radio" name="engine" value="llm"> Groq LLM</label>
+        <span class="hint" id="engine-note"></span>
+      </fieldset>
+
+      <div class="row">
+        <p class="hint" id="count">0 characters · minimum 20</p>
+        <div class="actions">
+          <button type="button" class="ghost" id="sample-legit">Try a safe sample</button>
+          <button type="button" class="ghost" id="sample-phish">Try a phishing sample</button>
+          <button type="submit" class="primary" id="submit">Scan email</button>
+        </div>
+      </div>
+    </form>
+
+    <div id="error" class="error" hidden role="alert"></div>
+
+    <div id="result" class="result" hidden>
+      <div class="verdict">
+        <span class="badge" id="badge">—</span>
+        <div>
+          <p class="conf"><b id="conf">—</b> confidence</p>
+          <div class="bar"><span id="bar"></span></div>
+        </div>
+      </div>
+      <div class="probs" id="probs">
+        <div><span>LEGITIMATE</span><b id="p-legit">—</b></div>
+        <div><span>PHISHING</span><b id="p-phish">—</b></div>
+      </div>
+
+      <div id="ml-block">
+        <h3>Warning signs <span class="sub">rule-based, shown for the reader</span></h3>
+        <ul class="reasons" id="reasons"></ul>
+
+        <h3>Structural signals</h3>
+        <div class="signals" id="signals"></div>
+      </div>
+
+      <div id="llm-block" hidden>
+        <h3>Groq LLM second opinion</h3>
+        <div class="llm" id="llm"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="how" id="how">
+    <h2>How it works</h2>
+    <ol>
+      <li><b>Measure structure first</b><span>Links, IP URLs, shorteners, capitals, exclamations and sender domain — read from the raw text, before any cleaning destroys them.</span></li>
+      <li><b>Vectorize the text</b><span>TF-IDF over 5,000 unigrams and bigrams, fitted on the training split only.</span></li>
+      <li><b>Combine</b><span>Structural features scaled to [0,1] and stacked beside the TF-IDF block.</span></li>
+      <li><b>Classify &amp; explain</b><span>Logistic Regression returns a probability; every signal that fired is listed back to you.</span></li>
+    </ol>
+    <p class="note">A false positive withholds real mail — a job offer, a medical result. Treat a
+      low-confidence PHISHING verdict as a warning banner, not a silent block.</p>
+  </section>
+</main>
+
+<footer>Phishing Email Detection · FastAPI + scikit-learn · confidence is distance from the decision boundary, not proof.</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
