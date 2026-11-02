@@ -1,0 +1,38 @@
+name: Deploy demo to GitHub Pages
+
+# Publishes static/ as a standalone site. With no backend there, static/demo.js
+# runs the trained model in the browser from static/model.json.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build site
+        run: |
+          mkdir -p _site/static
+          cp static/* _site/static/
+          # FastAPI's /docs page does not exist on Pages; point the link at the source instead.
+          sed 's#href="/docs">API<#href="https://github.com/${{ github.repository }}">Source<#' static/index.html > _site/index.html
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4

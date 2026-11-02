@@ -35,12 +35,12 @@ fetch("/api/info")
     $("stat-acc").textContent = (d.accuracy * 100).toFixed(1) + "%";
     $("stat-fpr").textContent = (d.false_positive_rate * 100).toFixed(2) + "%";
     $("stat-n").textContent = d.training_samples.toLocaleString();
-    setEngineAvailability(d.llm_available, d.llm_model);
+    setEngineAvailability(d.llm_available, d.llm_model, d.llm_note);
   })
   .catch(() => { $("stat-acc").textContent = "offline"; });
 
 // The LLM options only work once GROQ_API_KEY is configured on the server.
-function setEngineAvailability(available, model) {
+function setEngineAvailability(available, model, offNote) {
   const note = $("engine-note");
   if (available) {
     note.textContent = `Groq model: ${model}`;
@@ -50,7 +50,7 @@ function setEngineAvailability(available, model) {
     if (input.value !== "ml") input.disabled = true;
   });
   document.querySelector('input[value="ml"]').checked = true;
-  note.textContent = "Groq disabled — set GROQ_API_KEY to enable";
+  note.textContent = offNote || "Groq disabled — set GROQ_API_KEY to enable";
 }
 
 const engine = () => document.querySelector('input[name="engine"]:checked').value;
